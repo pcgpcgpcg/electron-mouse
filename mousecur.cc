@@ -26,7 +26,18 @@ Napi::Value ShowMouseCursor(const Napi::CallbackInfo& info) {
 
   bool arg0 = info[0].As<Napi::Boolean>().Value();
   #ifdef _WIN32
-  ::ShowCursor(arg0);
+   CURSORINFO cursor_info = {sizeof(CURSORINFO)};
+  if(arg0){
+    if (GetCursorInfo(&cursor_info) && cursor_info.flags == 0) {
+    // std::cout << "show\n";
+    while(ShowCursor(true)<=0);
+  }
+  }else{
+    if (GetCursorInfo(&cursor_info) && cursor_info.flags == 1) {
+    // std::cout << "hide\n";
+    while(ShowCursor(false)>=0);
+  }
+  }
   #endif
   Napi::Number num = Napi::Number::New(env, 0);
   return num;
